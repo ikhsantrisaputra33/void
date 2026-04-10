@@ -1,0 +1,452 @@
+import React, { useState, useEffect, useMemo } from 'react';
+import { 
+  Sparkles, 
+  Layers, 
+  Zap, 
+  Cpu, 
+  Layout, 
+  Palette, 
+  Target, 
+  Box, 
+  Terminal, 
+  MessageSquare, 
+  Rocket, 
+  Copy, 
+  CheckCircle,
+  ChevronRight,
+  RefreshCw,
+  FileText
+} from 'lucide-react';
+
+const App = () => {
+  // --- State Management ---
+  const [mode, setMode] = useState('Ultra'); // Basic, Professional, Ultra
+  const [loading, setLoading] = useState(false);
+  const [generatedPrompt, setGeneratedPrompt] = useState(null);
+  const [copied, setCopied] = useState(false);
+  const [formData, setFormData] = useState({
+    projectType: '',
+    title: '',
+    concept: '',
+    aesthetic: '',
+    audience: '',
+    tone: '',
+    functional: '',
+    additional: ''
+  });
+
+  const modes = ['Basic', 'Professional', 'Ultra'];
+
+  // --- Handlers ---
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleCopy = () => {
+    if (!generatedPrompt) return;
+    const text = document.getElementById('prompt-output').innerText;
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    document.body.appendChild(textArea);
+    textArea.select();
+    try {
+      document.execCommand('copy');
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Copy failed', err);
+    }
+    document.body.removeChild(textArea);
+  };
+
+  const generatePrompt = async () => {
+    setLoading(true);
+    // Simulate complex cognitive expansion
+    setTimeout(() => {
+      const result = constructProfessionalPrompt(formData, mode);
+      setGeneratedPrompt(result);
+      setLoading(false);
+    }, 1500);
+  };
+
+  // --- Logic Engine ---
+  const constructProfessionalPrompt = (data, selectedMode) => {
+    const { 
+      projectType = "General Project", 
+      title = "Untitled Initiative", 
+      concept = "Unspecified Innovation", 
+      aesthetic = "Minimalist Modern", 
+      audience = "Global Innovators", 
+      tone = "Sophisticated & Professional",
+      functional = "Seamless interaction and high performance",
+      additional = "" 
+    } = data;
+
+    // Depth modifiers based on mode
+    const isUltra = selectedMode === 'Ultra';
+    const isPro = selectedMode === 'Professional' || isUltra;
+
+    return {
+      overview: {
+        title: `Project: ${title || "The Alpha Concept"}`,
+        purpose: `This ${projectType || "initiative"} aims to bridge the gap between ${concept} and its practical implementation for ${audience}. It positions itself as a ${isUltra ? "category-defining benchmark" : "premier solution"} in the current market landscape.`,
+        intent: `To provide a ${tone} experience that transforms user perception of ${projectType} while maintaining strict adherence to ${aesthetic} principles.`
+      },
+      creativeDirection: {
+        visualIdentity: `A cohesive visual language rooted in ${aesthetic}, emphasizing clarity and intentionality.`,
+        influences: isPro ? `Drawing inspiration from Swiss Design principles, ${isUltra ? "Avant-Garde architectural silhouettes" : "modern digital workflows"}, and the organic precision of the natural world.` : "Modern industry standards.",
+        mood: `The atmosphere is ${tone}, evoking feelings of ${isUltra ? "transcendence and absolute reliability" : "trust and efficiency"}.`
+      },
+      visualSystem: {
+        palette: "Primary: Deep Obsidian & Titanium White. Secondary: Electric Cobalt (Accent). Tertiary: Neutral Greyscale for depth.",
+        typography: "Primary: A custom-weighted Neo-Grotesk for structural integrity. Secondary: A high-contrast Serif for narrative elements.",
+        layout: "Built on an 8-point rhythmic grid system with expansive negative space to allow for cognitive breathing room."
+      },
+      contentStructure: {
+        hierarchy: "1. Immediate Value Prop -> 2. Conceptual Deep Dive -> 3. Functional Proof -> 4. Call to Transcendence.",
+        flow: "A non-linear narrative journey that prioritizes the user's emotional state at every touchpoint."
+      },
+      mediaDirection: {
+        style: `High-fidelity ${isUltra ? "cinematic hyper-realism" : "professional photography"}.`,
+        lighting: "Global illumination with soft, directional key lighting to create subtle shadows and three-dimensional depth.",
+        imperfection: isUltra ? "Calculated 'wabi-sabi' imperfections to ensure human connection—organic grains and soft focus edges." : "Clean and polished."
+      },
+      interaction: {
+        uxFlow: "Zero-friction navigation focusing on intent-based architecture.",
+        animations: "Physics-based micro-interactions using ease-in-out quint curves for a premium, tactile feel."
+      },
+      technical: {
+        platform: "Multi-platform deployment (Web/iOS/Android) with 99th percentile performance optimization.",
+        scalability: "Atomic architecture designed for modular expansion and global localization."
+      },
+      copywriting: {
+        voice: `The voice is ${tone}, speaking with the authority of an expert but the soul of a storyteller.`,
+        sample: `"Innovation is not a feature; it is the silent foundation of everything we build."`
+      },
+      innovation: {
+        differentiation: isUltra ? `Integration of generative adaptive interfaces that evolve based on user behavior patterns.` : "Unique structural layouts that defy standard templates.",
+        risks: "Leveraging unconventional visual metaphors to challenge category norms."
+      }
+    };
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans p-4 md:p-8">
+      <div className="max-w-7xl mx-auto">
+        
+        {/* Header */}
+        <header className="mb-12 flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-200 pb-8">
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <div className="bg-indigo-600 p-2 rounded-lg text-white">
+                <Cpu size={24} />
+              </div>
+              <h1 className="text-2xl font-bold tracking-tight text-slate-900">MASTER PROMPT SYSTEM</h1>
+            </div>
+            <p className="text-slate-500 max-w-lg">Advanced Creative Direction & Engineering Specification Generator.</p>
+          </div>
+
+          <div className="flex items-center bg-white p-1 rounded-xl shadow-sm border border-slate-200">
+            {modes.map((m) => (
+              <button
+                key={m}
+                onClick={() => setMode(m)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                  mode === m 
+                    ? 'bg-indigo-600 text-white shadow-md' 
+                    : 'text-slate-500 hover:bg-slate-50'
+                }`}
+              >
+                {m} Mode
+              </button>
+            ))}
+          </div>
+        </header>
+
+        <main className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          
+          {/* Input Panel */}
+          <div className="lg:col-span-5 space-y-6">
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+              <div className="flex items-center gap-2 mb-6 text-indigo-600">
+                <Terminal size={18} />
+                <h2 className="font-semibold uppercase tracking-wider text-xs">Intelligence Input</h2>
+              </div>
+              
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-400 uppercase">Project Type</label>
+                    <input 
+                      name="projectType"
+                      placeholder="e.g. Fintech App"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all"
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-400 uppercase">Project Title</label>
+                    <input 
+                      name="title"
+                      placeholder="e.g. Zenith"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all"
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-400 uppercase">Core Concept / Idea</label>
+                  <textarea 
+                    name="concept"
+                    rows="3"
+                    placeholder="Briefly describe the soul of the project..."
+                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all resize-none"
+                    onChange={handleInputChange}
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-400 uppercase">Style / Aesthetic</label>
+                    <input 
+                      name="aesthetic"
+                      placeholder="e.g. Brutalist, Soft UI"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all"
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-400 uppercase">Target Audience</label>
+                    <input 
+                      name="audience"
+                      placeholder="e.g. Gen Z Creators"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all"
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-400 uppercase">Functional Requirements</label>
+                  <input 
+                    name="functional"
+                    placeholder="e.g. AI Integration, Real-time chat"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all"
+                    onChange={handleInputChange}
+                  />
+                </div>
+
+                <button 
+                  onClick={generatePrompt}
+                  disabled={loading}
+                  className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-indigo-200 flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-70"
+                >
+                  {loading ? (
+                    <RefreshCw className="animate-spin" size={20} />
+                  ) : (
+                    <>
+                      <Sparkles size={20} />
+                      GENERATE PRODUCTION BRIEF
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            <div className="p-6 bg-indigo-50 rounded-2xl border border-indigo-100">
+              <div className="flex gap-4">
+                <div className="bg-indigo-200 text-indigo-700 p-2 h-fit rounded-lg">
+                  <Zap size={20} />
+                </div>
+                <div>
+                  <h3 className="font-bold text-indigo-900 text-sm mb-1">PRO TIP</h3>
+                  <p className="text-xs text-indigo-700 leading-relaxed">
+                    Minimal inputs trigger "Context-Aware Expansion." Our engine uses industry standard heuristics to fill technical and aesthetic gaps automatically.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Output Panel */}
+          <div className="lg:col-span-7">
+            {!generatedPrompt && !loading ? (
+              <div className="h-full min-h-[500px] border-2 border-dashed border-slate-200 rounded-3xl flex flex-col items-center justify-center p-12 text-center text-slate-400">
+                <FileText size={64} strokeWidth={1} className="mb-4 opacity-20" />
+                <h3 className="text-lg font-medium text-slate-500">Awaiting Intelligence Input</h3>
+                <p className="max-w-xs text-sm mt-2">Fill the form to generate a deeply structured, industry-level creative prompt.</p>
+              </div>
+            ) : loading ? (
+              <div className="h-full min-h-[500px] bg-white border border-slate-200 rounded-3xl p-12 flex flex-col items-center justify-center space-y-6">
+                <div className="relative">
+                  <div className="w-16 h-16 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin"></div>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-8 h-8 bg-indigo-600 rounded-full animate-pulse"></div>
+                  </div>
+                </div>
+                <div className="text-center">
+                  <h3 className="text-lg font-bold text-slate-800">Architecting Prompt...</h3>
+                  <p className="text-sm text-slate-500">Mapping visual systems and technical requirements</p>
+                </div>
+              </div>
+            ) : (
+              <div className="bg-white border border-slate-200 rounded-3xl shadow-xl overflow-hidden flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-500">
+                {/* Output Header */}
+                <div className="bg-slate-900 p-6 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-white/10 p-2 rounded-lg">
+                      <Rocket size={18} className="text-indigo-400" />
+                    </div>
+                    <div>
+                      <h2 className="text-white font-bold text-sm">PRODUCTION BRIEF</h2>
+                      <p className="text-indigo-400 text-[10px] tracking-[0.2em] font-bold uppercase">Ready for Execution</p>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={handleCopy}
+                    className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-all"
+                  >
+                    {copied ? <CheckCircle size={14} className="text-green-400" /> : <Copy size={14} />}
+                    {copied ? "COPIED" : "COPY BRIEF"}
+                  </button>
+                </div>
+
+                {/* Output Body */}
+                <div id="prompt-output" className="p-8 overflow-y-auto max-h-[700px] space-y-10 selection:bg-indigo-100 selection:text-indigo-900">
+                  
+                  {/* Section A: Overview */}
+                  <section>
+                    <div className="flex items-center gap-2 mb-4 text-slate-400">
+                      <span className="text-[10px] font-black border border-slate-200 px-1.5 py-0.5 rounded">A</span>
+                      <h3 className="text-xs font-bold tracking-widest uppercase">Project Overview</h3>
+                    </div>
+                    <h4 className="text-2xl font-black text-slate-900 mb-3">{generatedPrompt.overview.title}</h4>
+                    <p className="text-slate-600 leading-relaxed text-lg font-light italic mb-4">"{generatedPrompt.overview.intent}"</p>
+                    <p className="text-slate-700 leading-relaxed">{generatedPrompt.overview.purpose}</p>
+                  </section>
+
+                  <div className="h-px bg-slate-100 w-full"></div>
+
+                  {/* Grid Sections B & C */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                    <section>
+                      <div className="flex items-center gap-2 mb-4 text-slate-400">
+                        <span className="text-[10px] font-black border border-slate-200 px-1.5 py-0.5 rounded">B</span>
+                        <h3 className="text-xs font-bold tracking-widest uppercase">Creative Direction</h3>
+                      </div>
+                      <div className="space-y-4">
+                        <div>
+                          <p className="text-[10px] font-bold text-indigo-600 uppercase mb-1">Visual Identity</p>
+                          <p className="text-sm text-slate-700 leading-relaxed">{generatedPrompt.creativeDirection.visualIdentity}</p>
+                        </div>
+                        <div>
+                          <p className="text-[10px] font-bold text-indigo-600 uppercase mb-1">Mood & Tone</p>
+                          <p className="text-sm text-slate-700 leading-relaxed">{generatedPrompt.creativeDirection.mood}</p>
+                        </div>
+                      </div>
+                    </section>
+
+                    <section>
+                      <div className="flex items-center gap-2 mb-4 text-slate-400">
+                        <span className="text-[10px] font-black border border-slate-200 px-1.5 py-0.5 rounded">C</span>
+                        <h3 className="text-xs font-bold tracking-widest uppercase">Visual System</h3>
+                      </div>
+                      <div className="space-y-4">
+                        <div className="flex items-start gap-3">
+                          <Palette size={16} className="text-slate-400 mt-1" />
+                          <div>
+                            <p className="text-[10px] font-bold text-slate-900 uppercase">Palette</p>
+                            <p className="text-sm text-slate-600">{generatedPrompt.visualSystem.palette}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-start gap-3">
+                          <Layout size={16} className="text-slate-400 mt-1" />
+                          <div>
+                            <p className="text-[10px] font-bold text-slate-900 uppercase">Grid & Layout</p>
+                            <p className="text-sm text-slate-600">{generatedPrompt.visualSystem.layout}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+
+                  {/* Section E: Media Direction */}
+                  <section className="bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                    <div className="flex items-center gap-2 mb-6 text-slate-400">
+                      <span className="text-[10px] font-black border border-slate-200 px-1.5 py-0.5 rounded text-slate-900">E</span>
+                      <h3 className="text-xs font-bold tracking-widest uppercase text-slate-900">Media Direction</h3>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      <div className="space-y-1">
+                        <p className="text-[10px] font-bold text-indigo-600 uppercase">Aesthetic Style</p>
+                        <p className="text-sm font-medium">{generatedPrompt.mediaDirection.style}</p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-[10px] font-bold text-indigo-600 uppercase">Lighting</p>
+                        <p className="text-sm font-medium">{generatedPrompt.mediaDirection.lighting}</p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-[10px] font-bold text-indigo-600 uppercase">Imperfection</p>
+                        <p className="text-sm font-medium">{generatedPrompt.mediaDirection.imperfection}</p>
+                      </div>
+                    </div>
+                  </section>
+
+                  {/* Sections F, G, H - Compressed */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <section>
+                      <h5 className="text-[10px] font-black uppercase text-slate-400 mb-3 tracking-widest">Experience (F)</h5>
+                      <p className="text-xs text-slate-600 leading-relaxed">{generatedPrompt.interaction.animations}</p>
+                    </section>
+                    <section>
+                      <h5 className="text-[10px] font-black uppercase text-slate-400 mb-3 tracking-widest">Technical (G)</h5>
+                      <p className="text-xs text-slate-600 leading-relaxed">{generatedPrompt.technical.platform}</p>
+                    </section>
+                    <section>
+                      <h5 className="text-[10px] font-black uppercase text-slate-400 mb-3 tracking-widest">Copywriting (H)</h5>
+                      <p className="text-xs text-indigo-700 font-medium italic leading-relaxed">{generatedPrompt.copywriting.sample}</p>
+                    </section>
+                  </div>
+
+                  {/* Section I: Innovation Layer */}
+                  <section className="pt-6 border-t border-indigo-100">
+                    <div className="flex items-center gap-2 mb-4 text-indigo-600">
+                      <Sparkles size={16} />
+                      <h3 className="text-xs font-bold tracking-widest uppercase">The Innovation Layer</h3>
+                    </div>
+                    <div className="bg-gradient-to-br from-indigo-600 to-indigo-800 p-6 rounded-2xl text-white">
+                      <p className="text-indigo-100 text-xs mb-2 leading-relaxed">Unique Differentiators & Artistic Risks:</p>
+                      <p className="text-lg font-bold leading-tight">{generatedPrompt.innovation.differentiation}</p>
+                      <div className="mt-4 flex items-center gap-2 text-[10px] text-indigo-300 font-bold uppercase tracking-widest">
+                        <CheckCircle size={12} />
+                        Engineered for Market Disruption
+                      </div>
+                    </div>
+                  </section>
+                </div>
+              </div>
+            )}
+          </div>
+        </main>
+
+        <footer className="mt-20 text-center text-slate-400 pb-12">
+          <p className="text-xs font-medium tracking-widest uppercase mb-4 opacity-50">Master Prompt Generator System v4.0.2</p>
+          <div className="flex justify-center gap-8">
+            <div className="flex items-center gap-1.5 opacity-50">
+              <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+              <span className="text-[10px] font-bold">CORE ACTIVE</span>
+            </div>
+            <div className="flex items-center gap-1.5 opacity-50">
+              <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full"></div>
+              <span className="text-[10px] font-bold">LLM OPTIMIZED</span>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </div>
+  );
+};
+
+export default App;
